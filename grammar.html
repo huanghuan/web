@@ -3,8 +3,7 @@
 <head>
 <meta charset='UTF-8'>
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-<script src='zepto.min.js'></script>
-<link rel='stylesheet' href='css/fontello.css'>
+<script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.min.js"></script>
 <style>
 a {
 	text-decoration: none;
@@ -22,7 +21,7 @@ header {
 	left: 0;
 	right: 0;
 	top: 0;
-	background: hsl(210, 100%, 50%);
+	background: hsl(210, 100%, 40%);
 	color: #fff;
 	font-size: 150%;
 	line-height: 2;
@@ -68,10 +67,16 @@ section a {
 	box-shadow: 0 0.25em hsl(135, 100%, 30%);
 	color: #fff;
 }
+.result {
+	font-size: 300%;
+	text-align: center;
+}
 </style>
 <script id='questions' type='text/plain'>
 I come [to/=from/in/at] England.
 Don't go out [as/while/=until] you've finished your work.
+I have been [play/played/=playing/plays] since the morning.
+Robin looks [sad/=sadly]. What's the matter with him?
 </script>
 </head>
 <body>
@@ -100,7 +105,15 @@ function go(step, delay) {
 	}
 	else {
 		container.style.left = -questionIndex + '00%';
-		$$('#qIndex').innerText = questionIndex += step;
+		if (questionIndex < questionCount) {
+			$$('#qIndex').innerText = questionIndex += step;
+		} else {
+			var e = document.createElement('section'), percent = 1 - $('.wrong').length / questionCount;
+			e.class = 'result';
+			e.innerHTML = 'Your score: ' + percent * 100 + '%';
+			container.appendChild(e);
+			$$('header').innerText = 'Test Result';
+		}
 	}
 }
 var container = $$('article'), questionCount = 0, questionIndex;
@@ -114,12 +127,11 @@ $$('#questions').textContent.split(/[\n\r]+/).forEach(function(q) {
 			q += '<a>' + c + '</a>';
 	});
 	var e = document.createElement('section');
-	e.id = questionCount++;
 	e.innerHTML = q.substring(0, i) + '____' + q.substring(j + 1);
 	container.appendChild(e);
 //	q.replace(/\[([^/\]]+)\]/g, '<input value="$1">'));
 });
-$$('#qCount').innerText = questionCount;
+$$('#qCount').innerText = questionCount = $('section').length;
 $$('#qIndex').innerText = questionIndex = 1;
 </script>
 </body>
