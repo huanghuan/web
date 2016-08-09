@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+<script src='zepto.min.js'></script>
+<link rel='stylesheet' href='css/fontello.css'>
+<style>
+a {
+	text-decoration: none;
+}
+article {
+	position: relative;
+	transition: left 0.5s;
+	white-space: nowrap;
+}
+body {
+	margin: 0;
+}
+header {
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	background: hsl(210, 100%, 50%);
+	color: #fff;
+	font-size: 150%;
+	line-height: 2;
+	text-align: center;
+}
+header a {
+	color: #fff;
+	display: inline-block;
+	width: 2em;
+}
+section {
+	box-sizing: border-box;
+	color: #333;
+	display: inline-block;
+	padding: 4em 2em 2em 2em;
+	width: 100%;
+}
+.fl-lt {
+	float: left;
+}
+.fl-rt {
+	float: right;
+}
+section a {
+	background: #eee;
+	border-radius: 0.5em;
+	box-shadow: 0 0.25em #ddd;
+	color: #333;
+	display: block;
+	line-height: 2;
+	margin-top: 2em;
+	text-align: center;
+}
+.shown .wrong {
+	background: hsl(15, 100%, 40%) url('cross.svg') no-repeat 0.5em 0;
+	background-size: contain;
+	box-shadow: 0 0.25em hsl(15, 100%, 30%);
+	color: #fff;
+}
+.shown .right {
+	background: hsl(135, 100%, 40%) url('check.svg') no-repeat 0.5em 0;
+	background-size: contain;
+	box-shadow: 0 0.25em hsl(135, 100%, 30%);
+	color: #fff;
+}
+</style>
+<script id='questions' type='text/plain'>
+I come [to/=from/in/at] England.
+Don't go out [as/while/=until] you've finished your work.
+</script>
+</head>
+<body>
+<header>
+<!--
+<i class='fl-lt icon-left-open' onclick='scroll(-1)'></i>
+<i class='fl-rt icon-right-open' onclick='scroll(1)'></i>
+-->
+Question <span id='qIndex'>1</span> of <span id='qCount'>10</span>
+</header>
+<article style='left:0'></article>
+<script>
+function $$(s) {
+	return document.querySelector(s);
+}
+//swim [swam] [swum]
+$(document).on('click', 'section a', function(e) {
+	var t = e.target, p = t.parentElement;
+	if (!t.className) t.className = 'wrong';
+	p.className = 'shown';
+	go(1, 1000);
+});
+function go(step, delay) {
+	if (delay) {
+		setTimeout(go.bind(null, step), delay);
+	}
+	else {
+		container.style.left = -questionIndex + '00%';
+		$$('#qIndex').innerText = questionIndex += step;
+	}
+}
+var container = $$('article'), questionCount = 0, questionIndex;
+$$('#questions').textContent.split(/[\n\r]+/).forEach(function(q) {
+	var i = q.indexOf('['), j = q.indexOf(']', i);
+	if (i < 0) return;
+	q.substring(i + 1, j).split('/').forEach(function(c) {
+		if (c[0] == '=')
+			q += '<a class="right">' + c.substring(1) + '</a>';
+		else
+			q += '<a>' + c + '</a>';
+	});
+	var e = document.createElement('section');
+	e.id = questionCount++;
+	e.innerHTML = q.substring(0, i) + '____' + q.substring(j + 1);
+	container.appendChild(e);
+//	q.replace(/\[([^/\]]+)\]/g, '<input value="$1">'));
+});
+$$('#qCount').innerText = questionCount;
+$$('#qIndex').innerText = questionIndex = 1;
+</script>
+</body>
+</html>
