@@ -15,6 +15,8 @@ article {
 }
 body {
 	margin: 0;
+	overflow-x: hidden;
+	-webkit-user-select: none;
 }
 header {
 	position: fixed;
@@ -76,7 +78,7 @@ section a {
 I come [to/=from/in/at] England.
 Don't go out [as/while/=until] you've finished your work.
 I have been [play/played/=playing/plays] since the morning.
-Robin looks [sad/=sadly]. What's the matter with him?
+I fly to Austria [last winter/next winter/=every winter].
 </script>
 </head>
 <body>
@@ -93,27 +95,37 @@ function $$(s) {
 	return document.querySelector(s);
 }
 //swim [swam] [swum]
+var dragX;
 $(document).on('click', 'section a', function(e) {
 	var t = e.target, p = t.parentElement;
 	if (!t.className) t.className = 'wrong';
 	p.className = 'shown';
 	go(1, 1000);
+}).on('mousedown', 'article', function(e) {
+	dragX = e.screenX; 
+}).on('mousemove', 'article', function(e) {
+	if (!dragX) return;
+	var x = e.screenX - dragX;
+	if (x < -100 && questionIndex < questionCount) go(1);
+	else if (x > 100 && questionIndex > 0) go(-1);
 });
 function go(step, delay) {
+	dragX = 0;
 	if (delay) {
 		setTimeout(go.bind(null, step), delay);
 	}
 	else {
-		container.style.left = -questionIndex + '00%';
+		questionIndex += step;
 		if (questionIndex < questionCount) {
-			$$('#qIndex').innerText = questionIndex += step;
+			$$('#qIndex').innerText = questionIndex;
 		} else {
+			$$('header').innerText = 'Test Result';
 			var e = document.createElement('section'), percent = 1 - $('.wrong').length / questionCount;
-			e.class = 'result';
+			e.className = 'result';
 			e.innerHTML = 'Your score: ' + percent * 100 + '%';
 			container.appendChild(e);
-			$$('header').innerText = 'Test Result';
 		}
+		container.style.left = 1 - questionIndex + '00%';
 	}
 }
 var container = $$('article'), questionCount = 0, questionIndex;
