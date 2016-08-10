@@ -10,10 +10,13 @@ a {
 }
 article {
 	position: relative;
+	top: 3em;
+	transition: left 0.5s;
 	white-space: nowrap;
 }
 body {
 	margin: 0;
+	overflow-x: hidden;
 	-webkit-user-select: none;
 }
 header {
@@ -32,18 +35,18 @@ header a {
 	display: inline-block;
 	width: 2em;
 }
-section {
-	box-sizing: border-box;
-	color: #333;
-	display: inline-block;
-	padding: 4em 2em 2em 2em;
-	width: 100%;
-}
 .fl-lt {
 	float: left;
 }
 .fl-rt {
 	float: right;
+}
+section {
+	box-sizing: border-box;
+	color: #333;
+	display: inline-block;
+	padding: 2em;
+	width: 100%;
 }
 section a {
 	background: #eee;
@@ -52,32 +55,32 @@ section a {
 	color: #333;
 	display: block;
 	line-height: 2;
-	margin-top: 2em;
+	margin-top: 1.5em;
 	text-align: center;
 	transition: all 0.5s;
 }
-.shown .wrong {
+a.wrong {
 	background: hsl(15, 100%, 40%) url('cross.svg') no-repeat 0.5em 0;
 	background-size: contain;
 	box-shadow: 0 0.25em hsl(15, 100%, 30%);
 	color: #fff;
 }
-.shown .right {
+a.right {
 	background: hsl(135, 100%, 40%) url('check.svg') no-repeat 0.5em 0;
 	background-size: contain;
 	box-shadow: 0 0.25em hsl(135, 100%, 30%);
 	color: #fff;
 }
 .result {
-	font-size: 300%;
+	font-size: 150%;
 	text-align: center;
 }
 </style>
 <script id='questions' type='text/plain'>
-I come [to/=from/in/at] England.
+I come [at/=from/in/to] England.
 Don't go out [as/while/=until] you've finished your work.
 I have been [play/played/=playing/plays] since the morning.
-I fly to Austria [last winter/next winter/=every winter].
+I fly to Austria [=every winter/last winter/next winter].
 </script>
 </head>
 <body>
@@ -86,37 +89,41 @@ I fly to Austria [last winter/next winter/=every winter].
 <i class='fl-lt icon-left-open' onclick='scroll(-1)'></i>
 <i class='fl-rt icon-right-open' onclick='scroll(1)'></i>
 -->
-<article></article>
+<article style='left:0'></article>
 <script>
 function $$(s) {
 	return document.querySelector(s);
 }
 $(document).on('click', 'section a', function(e) {
-	var t = e.target, p = t.parentElement;
-	if (!t.className) t.className = 'wrong';
-	p.className = 'shown';
-	setTimeout(scrollToX.bind(null, body.scrollWidth), 1500);
-	next();
-}).on('mouseup', 'article', function(e) {
-	var sx = body.scrollLeft, sw = body.clientWidth;
-	if (sx % sw)
-		scrollToX((sx / sw + 0.5) | 0 * sw);
-});
-function scrollToX(x) {
-	var t0 = new Date().getTime(), x0 = body.scrollLeft;
-	var s = x - x0, d = Math.abs(s * 500 / body.clientWidth);
-	s /= d;
-	function f() {
-		var t = new Date().getTime() - t0;
-		if (t < d) {
-			body.scrollLeft = x0 + s * t;
-			window.requestAnimationFrame(f);
-		} else {
-			body.scrollLeft = x;
-		}
+	var a = e.target, b, s;
+	if (a.className) return;
+	b = a.hasAttribute('right');
+	a.className = b ? 'right' : 'wrong';
+	s = a.parentElement;
+	if (!s.className) s.className = a.className;
+	if (b) {
+		setTimeout(function() {
+			container.style.left = -count + '00%';
+			next();
+		}, 1000);
 	}
-	window.requestAnimationFrame(f);
+/*
+var x0;
+function scroll(direction) {
+	container.style.left = parseInt(container.style.left) + direction * 100 + '%';
+	x0 = 0;
 }
+}).on('mousedown', function(e) {
+	x0 = e.screenX;
+}).on('mousemove', function(e) {
+	if (!x0) return;
+	var dx = e.screenX - x0;
+	if (dx < 80)
+		scrollToX(-1);
+	else if (dx > 80)
+		scrollToX(1);
+*/
+});
 var body = document.body, container = $$('article'), questions = $$('#questions').textContent.split(/[\n\r]+/), count = 0;
 function next() {
 	if (!questions) return;
@@ -128,17 +135,17 @@ function next() {
 		}
 	}
 	questions = false;
-	var e = document.createElement('section'), percent = 1 - $('.wrong').length / count;
-	e.className = 'result';
-	e.innerHTML = 'Your score: ' + percent * 100 + '%';
-	container.appendChild(e);
+	var percent = $('section.right').length / $('section').length, s = document.createElement('section');
+	s.className = 'result';
+	s.innerHTML = 'Your score: ' + percent * 100 + '%';
+	container.appendChild(s);
 }
 function makeCard(question) {
 	count++;
 	var i = question.indexOf('['), j = question.indexOf(']', i);
 	question.substring(i + 1, j).split('/').forEach(function(choice) {
 		if (choice[0] == '=')
-			question += '<a class="right">' + choice.substring(1) + '</a>';
+			question += '<a right>' + choice.substring(1) + '</a>';
 		else
 			question += '<a>' + choice + '</a>';
 	});
