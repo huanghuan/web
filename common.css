@@ -3,8 +3,9 @@ a {
 }
 a.back {
 	left: 0;
-	background: url(left.svg) no-repeat;
-	background-size: contain;
+}
+a.back:after {
+	content: url(left.svg);
 }
 article {
 	margin-top: 3em;
