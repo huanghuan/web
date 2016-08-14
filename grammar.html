@@ -57,8 +57,17 @@ a.wrong:after {
 	font-size: 150%;
 	text-align: center;
 }
+p.explain {
+	display: none;
+}
 </style>
 <script id='questions' type='text/plain'>
+Paul doesn’t have to be made [=to learn/learn/learning].//make可带不带to的不定式作宾补（变为被动结构，必须加to）
+My mother is [=too/very/such] busy to go to the cinema.
+If he doesn’t go, I won’t go, [too/rather/=either/neither].
+It is [sure/=certain/certainly] that he will come on time.
+What a [=busy/busier/busiest] street Nanjing Road is.
+Would you be [as kind as/=so kind as/very kind as] to lend me your bike tomorrow?
 I come [at/=from/in/to] England.
 Don't go out [as/while/=until] you've finished your work.
 I have been [play/played/=playing/plays] since the morning.
@@ -124,6 +133,7 @@ function next() {
 }
 function makeCard(question) {
 	count++;
+	question = question.replace(/\/\/(.+)/, '<p class="explain">$1</p>');
 	var i = question.indexOf('['), j = question.indexOf(']', i);
 	question.substring(i + 1, j).split('/').forEach(function(choice) {
 		if (choice[0] == '=')
