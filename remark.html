@@ -1,0 +1,75 @@
+<html>
+<body>
+<template>
+</template>
+<script type='remark'>
+- _bold_ text
+- /italic/ text
+</script>
+<script>
+function forEach(list, callback) {
+	var i, l;
+	if (list) {
+		for (i = 0, l = list.length; i < l; i++) {
+			callback(list[i], i, list);
+		}
+	}
+}
+function requireParent(parent, tagName) {
+	return parent.tagName === tagName ? parent : createElement(parent.parentNode, tagName);
+}
+function createElement(parent, tagName) {
+	var e = document.createElement(tagName);
+	parent.appendChild(e);
+	return e;
+}
+function createText(parent, text) {
+	var t = document.createText(text);
+	parent.appendChild(t);
+	return t;
+}
+var parent;
+var handler = {
+	'/': function(i, s) {
+	},
+	'|':,
+	'$': function(line) {
+		var header = createElement(parent, 'header);
+		createText(header, line.substring(1));
+	}
+}
+var handlers = [];
+handlers.add = function(regexp, handler) {
+	regexp.handler = handler;
+	this.push(regexp);
+	return this;
+}
+handlers.add(/\|/g, function(line) {
+	parent = requireParent(parent, 'table');
+	var tr = createElement(parent, 'tr');
+	line.split('|').forEach(function(data) {
+		var td = createElement(tr, 'td');
+	});
+});
+handlers.add(/.*/g, function(line) {
+	if (line.length) {
+		parent = requireParent(parent, 'p');
+		createText(parent, line);
+	} else {
+		if (parent.tagName === 'P')
+	}
+});
+forEach(document.querySelectorAll('script[type="remark"]'), function(script) {
+	parent = document.createElement('article');
+	script.parentNode.replaceChild(parent, script);
+	script.textContent.split(/\n\r|\n|\r/).forEach(function(line) {
+		handlers.some(function(regexp) {
+			var m = regexp.exec(line);
+			if (m) regexp.handle(m);
+			return m;
+		});
+	});
+});
+</script>
+</body>
+</html>
