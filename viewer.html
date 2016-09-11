@@ -1,0 +1,75 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+<script src='interact.min.js'></script>
+<style>
+body {
+	margin: 0;
+}
+canvas {
+	width: 100%;
+	height: 100%;
+}
+table {
+	width: 100%;
+	height: 100%;
+}
+td {
+	text-align: center;
+	vertical-align: middle;
+}
+video {
+	display: none;
+}
+</style>
+</head>
+<body>
+<label>x</label>
+<main><img src='small.jpg'></main>
+<!--
+<script src='hammer.min.js'></script>
+<script src='http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.6.4/fabric.min.js'></script>
+	background: url(small.jpg) no-repeat center;
+	background-size: contain;
+	width: 100%;
+	height: 100%;
+<table><tr><td><img src='small.jpg'></td></tr></table>
+<canvas width='1280' height='720'></canvas>
+<video src='massage.mp4' autoplay></video>
+<script>
+var c = document.getElementsByTagName('canvas')[0], ctx = c.getContext('2d'), v = document.getElementsByTagName('video')[0];
+v.addEventListener('play', bitblt);
+function bitblt() {
+	ctx.drawImage(v, 0, 0);
+	requestAnimationFrame(bitblt);
+}
+new Hammer(m).on('pinch', e => {
+	l.innerText = JSON.stringify(e, null, 2);
+}).on('pan', e => {
+	l.innerText = JSON.stringify(e, null, 2);
+}).get('pinch').set({ enable: true });
+</script>
+-->
+<script>
+let i = document.querySelector('img'), s = 1, x = 800, y = 480;
+document.body.onmousewheel = function(e) {
+	s += e.wheelDelta > 0 ? 0.125 : -0.125;
+	m.style.transform = `scale(${s})`;
+};
+interact(i).draggable({
+	inertia: true,
+	onmove(event) {
+		x += event.dx;
+		y += event.dy;
+		event.target.style.transform = `scale(${s}) translate(${x}px, ${y}px)`;
+	},
+	restric: {
+		restriction: 'parent',
+		endOnly: true,
+		elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+	}
+}).gesturable({
+});
+</script>
+</body>
+</html>
