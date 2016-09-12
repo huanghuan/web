@@ -1,0 +1,54 @@
+<html>
+<head>
+<style>
+canvas {
+	background: red;
+}
+</style>
+</head>
+<body>
+<script>
+function createCanvas(w, h) {
+	let c = document.createElement('canvas'), s, x, y, os, ox, oy, ds, dx, dy;
+	function distance(x0, y0, x1, y1) {
+		let dx = x1 - x0, dy = y1 - y0;
+		return Math.sqrt(dx * dx + dy * dy);
+	}
+	function update(s, x, y) {
+		c.style.transform = `scale(${s}) translate(${x}px, ${y}px)`;
+	}
+	function touch(event) {
+		let a = event.targetTouches;
+		if (a.length == 0) {
+			s *= ds;
+			x += dx;
+			y += dy;
+		} else if (a.length == 1) {
+			ox = a[0].pageX;
+			oy = a[0].pageY;
+		} else {
+			os = distance(a[0].pageX, a[0].pageY, a[1].pageX, a[1].pageY);
+		}
+	}
+	function move(event) {
+		let a = event.targetTouches;
+		if (a.length == 1) {
+			dx = a[0].pageX - ox;
+			dy = a[0].pageY - oy;
+		} else {
+			ds = distance(a[0].pageX, a[0].pageY, a[1].pageX, a[1].pageY) / os;
+		}
+		update(s * ds, x + dx, y + dy);
+	}
+	c.addEventListener('touchstart', touch);
+	c.addEventListener('touchend', touch);
+	c.addEventListener('touchmove', move);
+	c.width = w;
+	c.height = h;
+	update(s = 1, x = 320, y = 320);
+	return c;
+}
+document.body.appendChild(createCanvas(480, 480));
+</script>
+</body>
+</html>
