@@ -1,5 +1,7 @@
 <html>
 <head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
 <style>
 canvas {
 	background: red;
@@ -9,20 +11,21 @@ canvas {
 <body>
 <script>
 function createCanvas(w, h) {
-	let c = document.createElement('canvas'), s, x, y, os, ox, oy, ds, dx, dy;
+	var c = document.createElement('canvas'), s, x, y, os, ox, oy, ds = 1, dx = 0, dy = 0;
 	function distance(x0, y0, x1, y1) {
-		let dx = x1 - x0, dy = y1 - y0;
+		var dx = x1 - x0, dy = y1 - y0;
 		return Math.sqrt(dx * dx + dy * dy);
 	}
 	function update(s, x, y) {
 		c.style.transform = `scale(${s}) translate(${x}px, ${y}px)`;
 	}
 	function touch(event) {
-		let a = event.targetTouches;
+		var a = event.targetTouches;
 		if (a.length == 0) {
 			s *= ds;
 			x += dx;
 			y += dy;
+			ds = 1, dx = 0, dy = 0;
 		} else if (a.length == 1) {
 			ox = a[0].pageX;
 			oy = a[0].pageY;
@@ -31,24 +34,24 @@ function createCanvas(w, h) {
 		}
 	}
 	function move(event) {
-		let a = event.targetTouches;
+		var a = event.targetTouches;
 		if (a.length == 1) {
 			dx = a[0].pageX - ox;
 			dy = a[0].pageY - oy;
 		} else {
 			ds = distance(a[0].pageX, a[0].pageY, a[1].pageX, a[1].pageY) / os;
 		}
-		update(s * ds, x + dx, y + dy);
+		update(s * ds, x + dx | 0, y + dy | 0);
 	}
 	c.addEventListener('touchstart', touch);
 	c.addEventListener('touchend', touch);
 	c.addEventListener('touchmove', move);
 	c.width = w;
 	c.height = h;
-	update(s = 1, x = 320, y = 320);
+	update(s = 1, x = 100, y = 100);
 	return c;
 }
-document.body.appendChild(createCanvas(480, 480));
+document.body.appendChild(createCanvas(200, 200));
 </script>
 </body>
 </html>
