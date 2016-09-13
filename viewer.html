@@ -1,14 +1,20 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-<script src='interact.min.js'></script>
 <style>
 body {
 	margin: 0;
+	overflow: hidden;
 }
-canvas {
+header {
+	background: linear-gradient(to left, #0cf ,#36c);
+	color: #fff;
+	font-weight: bold;
+	line-height: 2;
+	opacity: 0.8;
+	position: fixed;
+	text-align: center;
 	width: 100%;
-	height: 100%;
 }
 table {
 	width: 100%;
@@ -18,57 +24,58 @@ td {
 	text-align: center;
 	vertical-align: middle;
 }
-video {
-	display: none;
-}
 </style>
 </head>
 <body>
-<label>x</label>
-<main><img src='small.jpg'></main>
-<!--
-<script src='hammer.min.js'></script>
-<script src='http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.6.4/fabric.min.js'></script>
-	background: url(small.jpg) no-repeat center;
-	background-size: contain;
-	width: 100%;
-	height: 100%;
-<table><tr><td><img src='small.jpg'></td></tr></table>
-<canvas width='1280' height='720'></canvas>
-<video src='massage.mp4' autoplay></video>
+<header>Medical Image Viewer</header>
+<table border='0' cellpadding='0' cellspacing='0'><tr><td><main><img src='cat.jpg'></main></td></tr></table>
 <script>
-var c = document.getElementsByTagName('canvas')[0], ctx = c.getContext('2d'), v = document.getElementsByTagName('video')[0];
-v.addEventListener('play', bitblt);
-function bitblt() {
-	ctx.drawImage(v, 0, 0);
-	requestAnimationFrame(bitblt);
+var m = document.querySelector('main'), p = document.body;;
+var d, x, y, z;
+function distance(x0, y0, x1, y1) {
+	var x = x1 - x0, y = y1 - y0;
+	return Math.sqrt(x * x + y * y);
 }
-new Hammer(m).on('pinch', e => {
-	l.innerText = JSON.stringify(e, null, 2);
-}).on('pan', e => {
-	l.innerText = JSON.stringify(e, null, 2);
-}).get('pinch').set({ enable: true });
-</script>
--->
-<script>
-let i = document.querySelector('img'), s = 1, x = 800, y = 480;
-document.body.onmousewheel = function(e) {
-	s += e.wheelDelta > 0 ? 0.125 : -0.125;
-	m.style.transform = `scale(${s})`;
-};
-interact(i).draggable({
-	inertia: true,
-	onmove(event) {
-		x += event.dx;
-		y += event.dy;
-		event.target.style.transform = `scale(${s}) translate(${x}px, ${y}px)`;
-	},
-	restric: {
-		restriction: 'parent',
-		endOnly: true,
-		elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+function contain(w0, h0, w1, h1) {
+	return Math.min(w1 / w0, h1 / h0);
+}
+function update(zoom) {
+	m.style.zoom = z * zoom + '%';
+	if (p.scrollLeft > 0)
+		p.scrollLeft *= zoom;
+	if (p.scrollTop > 0)
+		p.scrollTop *= zoom;
+}
+document.body.addEventListener('touchstart', function(e) {
+	var a = e.targetTouches;
+	if (a.length == 2) {
+		e.preventDefault();
+		d = distance(a[0].pageX, a[0].pageY, a[1].pageX, a[1].pageY);
+		z = parseFloat(m.style.zoom) || 100;
 	}
-}).gesturable({
+});
+document.body.addEventListener('touchmove', function(e) {
+	var a = e.targetTouches;
+	if (a.length == 2) {
+		e.preventDefault();
+		update(distance(a[0].pageX, a[0].pageY, a[1].pageX, a[1].pageY) / d);
+	}
+});
+document.body.addEventListener('mousedown', function(e) {
+	x = e.pageX;
+	y = e.pageY
+});
+document.body.addEventListener('mousemove', function(e) {
+	if (e.buttons == 1) {
+		e.preventDefault();
+		window.scrollBy(e.pageX - x, e.pageY - y);
+		x = e.pageX;
+		y = e.pageY
+	}
+});
+document.body.addEventListener('mousewheel', function(e) {
+	z = parseFloat(m.style.zoom) || 100;
+	update(e.wheelDelta > 0 ? 1.25 : 0.8);
 });
 </script>
 </body>
