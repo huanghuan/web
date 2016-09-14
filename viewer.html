@@ -4,7 +4,24 @@
 <style>
 body {
 	margin: 0;
-	overflow: hidden;
+}
+.scroller {
+	overflow: auto;
+	text-align: center;
+	white-space: nowrap;
+	width: 100%;
+	height: 100%;
+}
+.ghost {
+	display: inline-block;
+	vertical-align: middle;
+	width: 0;
+	height: 100%;
+}
+.wrapper {
+	display: inline-block;
+	margin: auto;
+	vertical-align: middle;
 }
 header {
 	background: linear-gradient(to left, #0cf ,#36c);
@@ -12,25 +29,19 @@ header {
 	font-weight: bold;
 	line-height: 2;
 	opacity: 0.8;
+	text-align: center;
 	position: fixed;
-	text-align: center;
+	left: 0;
+	top: 0;
 	width: 100%;
-}
-table {
-	width: 100%;
-	height: 100%;
-}
-td {
-	text-align: center;
-	vertical-align: middle;
 }
 </style>
 </head>
 <body>
+<div class='scroller'><div class='ghost'></div><div class='wrapper'><img src='puppy.jpg'></div></div>
 <header>Medical Image Viewer</header>
-<table border='0' cellpadding='0' cellspacing='0'><tr><td><main><img src='cat.jpg'></main></td></tr></table>
 <script>
-var m = document.querySelector('main'), p = document.body;;
+var m = document.querySelector('.wrapper'), p = m.parentNode;
 var d, x, y, z;
 function distance(x0, y0, x1, y1) {
 	var x = x1 - x0, y = y1 - y0;
@@ -41,10 +52,6 @@ function contain(w0, h0, w1, h1) {
 }
 function update(zoom) {
 	m.style.zoom = z * zoom + '%';
-	if (p.scrollLeft > 0)
-		p.scrollLeft *= zoom;
-	if (p.scrollTop > 0)
-		p.scrollTop *= zoom;
 }
 document.body.addEventListener('touchstart', function(e) {
 	var a = e.targetTouches;
@@ -61,22 +68,31 @@ document.body.addEventListener('touchmove', function(e) {
 		update(distance(a[0].pageX, a[0].pageY, a[1].pageX, a[1].pageY) / d);
 	}
 });
-document.body.addEventListener('mousedown', function(e) {
-	x = e.pageX;
-	y = e.pageY
-});
-document.body.addEventListener('mousemove', function(e) {
-	if (e.buttons == 1) {
-		e.preventDefault();
-		window.scrollBy(e.pageX - x, e.pageY - y);
-		x = e.pageX;
-		y = e.pageY
-	}
-});
-document.body.addEventListener('mousewheel', function(e) {
+document.body.addEventListener('mousewheel', function(ev) {
+	ev.preventDefault();
 	z = parseFloat(m.style.zoom) || 100;
-	update(e.wheelDelta > 0 ? 1.25 : 0.8);
+	update(ev.wheelDelta > 0 ? 1.25 : 0.8);
 });
+function pan(el) {
+	var x, y;
+	el.addEventListener('mousedown', function(ev) {
+		if (ev.buttons == 1) {
+			ev.preventDefault();
+			x = ev.pageX + el.scrollLeft;
+			y = ev.pageY + el.scrollTop;
+		}
+	});
+	el.addEventListener('mousemove', function(ev) {
+		if (ev.buttons == 1) {
+			ev.preventDefault();
+			el.scrollLeft = x - ev.pageX;
+			el.scrollTop = y - ev.pageY;
+		}
+	});
+}
+function pinch() {
+}
+pan(p);
 </script>
 </body>
 </html>
