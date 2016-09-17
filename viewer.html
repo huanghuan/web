@@ -1,6 +1,7 @@
 <html>
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1,user-scalable=0'>
 <style>
 body {
 	margin: 0;
@@ -21,35 +22,81 @@ body {
 .wrapper {
 	display: inline-block;
 	margin: auto;
+	position: relative;
 	vertical-align: middle;
+}
+.wrapper svg {
+	position: absolute;
+	left: 0;
+	top: 0;
+	opacity: 0.6;
+	fill: none;
+	stroke: red;
+	stroke-width: 4px;
 }
 header {
 	background: linear-gradient(to left, #0cf ,#36c);
 	opacity: 0.8;
-	padding: 4px;
 	text-align: center;
 	position: fixed;
 	left: 0;
 	top: 0;
 	width: 100%;
 }
+header svg {
+	margin: 4px 16px;
+}
+footer {
+	background: #fff;
+	box-sizing: border-box;
+	line-height: 1;
+	opacity: 0.8;
+	padding: 4px 4px 4px 56px;
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+}
+footer img {
+	position: absolute;
+	left: 4px;
+	top: 4px;
+	width: 48px;
+	height: 48px;
+	border-radius: 24px;
+}
+footer span {
+	color: #666;
+	font-size: 75%;
+}
+footer .time {
+	float: right;
+}
+footer div {
+	clear: both;
+}
 </style>
 </head>
 <body>
-<div class='scroller'><div class='ghost'></div><div class='wrapper'><img src='puppy.jpg'></div></div>
-<header><a href='javascript:scale(1.25)'><svg viewBox="0 0 960 960" width="32" height="32">
-	<path d="m543,375h-92v-92c0-21-17-38-38-38-21,0-38,17-38,38v92h-92c-21,0-38,17-38,38 0,21 17,38 38,38h92v92c0,21 17,38 38,38 21,0 38-17 38-38v-92h92c21,0 38-17 38-38 0-21-17-38-38-38z" style="fill:white"/>
-	<path d="m413,729c-174,0-315-141-315-315s141-315 315-315 315,141 315,315-141,315-315,315zm515,146l-212-212c56-68 89-155 89-249 0-217-176-392-392-392s-392,176-392,392 176,392 392,392c95,0 181-33 249-89l212,212c10,10 40,15 54,0 15-15 15-39-0-54z" style="fill:white"/>
-</svg></a><a href='javascript:scale(0.8)'><svg viewBox="0 0 960 960" width="32" height="32">
-	<path d="m543,374h-261c-21,0-38,17-38,38 0,21 17,38 38,38h261c21,0 38-17 38-38 0-21-17-38-38-38z" style="fill:white"/>
-	<path d="m413,728c-174,0-315-141-315-315 0-174 141-315 315-315 174,0 315,141 315,315 11e-26,174-141,315-315,315zm515,146l-212-212c56-68 89-155 89-249 0-217-176-392-392-392s-392,176-392,392 176,392 392,392c95,0 181-33 249-89l212,212c15,15 39,15 54,0 15-15 15-39 0-54z" style="fill:white"/>
-</svg></a><svg viewBox="0 0 960 960" width="32" height="32">
-	<path d="m138,97c-23,0-41,15-41,34v463c0,19 18,34 41,34h345c10,0 20,4 28,12l161,166v-139c0-21 17-38 38-38h112c23,0 41-15 41-34v-463c0-19-18-34-41-34h-684-5e-26zm544,829l-216-222h-329c-65,0-117-50-117-110v-463c13e-28-61 53-110 117-110h684c65,0 117,50 117,110v463c0,61-53,110-117,110h-74v196c0,37-42,53-66,27z" style="fill:white"/>
-	<path d="m705,289h-450c-21,0-38-17-38-38s17-38 38-38h450c21,0 38,17 38,38s-17,38-38,38z" style="fill:white"/>
-	<path d="m705,508h-450c-21,0-38-17-38-38 0-21 17-38 38-38h450c21,0 38,17 38,38 0,21-17,38-38,38z" style="fill:white"/>
-</svg><svg viewBox="0 0 960 960" width="32" height="32">
-	<path d="m853,259l-61,61-152-152 61-61c12-12 34-12 46,0l106,106c13,13 13,34 0,46zm-508,508l-152-152 393-393 152,152-393,393zm-187-79l114,114-158,45 45-158zm749-530l-106-106c-21-21-95-60-155,0l-535,535c-5,5-8,10-10,17l-81,287c-4,13 0,28 10,38 10,10 29,12 38,10l287-81c6-2 12-5 17-10l535-535c43-43 43-112 0-155z" style="fill:white"/>
+<div class='scroller'><div class='ghost'></div><div class='wrapper'><img src='puppy.jpg'><svg width='800' height='800'>
+	<path d='M100,100 T200,100 200,200 100,200'/>
+</svg></div></div>
+<header><a href='javascript:scale(1.25)'><svg viewBox='0 0 960 960' width='32' height='32'>
+	<path d='m543,375h-92v-92c0-21-17-38-38-38-21,0-38,17-38,38v92h-92c-21,0-38,17-38,38 0,21 17,38 38,38h92v92c0,21 17,38 38,38 21,0 38-17 38-38v-92h92c21,0 38-17 38-38 0-21-17-38-38-38z' style='fill:white'/>
+	<path d='m413,729c-174,0-315-141-315-315s141-315 315-315 315,141 315,315-141,315-315,315zm515,146l-212-212c56-68 89-155 89-249 0-217-176-392-392-392s-392,176-392,392 176,392 392,392c95,0 181-33 249-89l212,212c10,10 40,15 54,0 15-15 15-39-0-54z' style='fill:white'/>
+</svg></a><a href='javascript:scale(0.8)'><svg viewBox='0 0 960 960' width='32' height='32'>
+	<path d='m543,374h-261c-21,0-38,17-38,38 0,21 17,38 38,38h261c21,0 38-17 38-38 0-21-17-38-38-38z' style='fill:white'/>
+	<path d='m413,728c-174,0-315-141-315-315 0-174 141-315 315-315 174,0 315,141 315,315 11e-26,174-141,315-315,315zm515,146l-212-212c56-68 89-155 89-249 0-217-176-392-392-392s-392,176-392,392 176,392 392,392c95,0 181-33 249-89l212,212c15,15 39,15 54,0 15-15 15-39 0-54z' style='fill:white'/>
+</svg></a><svg viewBox='0 0 960 960' width='32' height='32'>
+	<path d='m138,97c-23,0-41,15-41,34v463c0,19 18,34 41,34h345c10,0 20,4 28,12l161,166v-139c0-21 17-38 38-38h112c23,0 41-15 41-34v-463c0-19-18-34-41-34h-684-5e-26zm544,829l-216-222h-329c-65,0-117-50-117-110v-463c13e-28-61 53-110 117-110h684c65,0 117,50 117,110v463c0,61-53,110-117,110h-74v196c0,37-42,53-66,27z' style='fill:white'/>
+	<path d='m705,289h-450c-21,0-38-17-38-38s17-38 38-38h450c21,0 38,17 38,38s-17,38-38,38z' style='fill:white'/>
+	<path d='m705,508h-450c-21,0-38-17-38-38 0-21 17-38 38-38h450c21,0 38,17 38,38 0,21-17,38-38,38z' style='fill:white'/>
+</svg><svg viewBox='0 0 960 960' width='32' height='32'>
+	<path d='m853,259l-61,61-152-152 61-61c12-12 34-12 46,0l106,106c13,13 13,34 0,46zm-508,508l-152-152 393-393 152,152-393,393zm-187-79l114,114-158,45 45-158zm749-530l-106-106c-21-21-95-60-155,0l-535,535c-5,5-8,10-10,17l-81,287c-4,13 0,28 10,38 10,10 29,12 38,10l287-81c6-2 12-5 17-10l535-535c43-43 43-112 0-155z' style='fill:white'/>
 </svg></header>
+<footer><img src='doctor.jpg'>
+<span class='nick'>张医生</span><span class='time'>2016-09-15 22:43</span>
+<div>What a cute puppy!</div></footer>
 <script>
 var wr = document.querySelector('.wrapper'), sc = wr.parentNode;
 function distance(x0, y0, x1, y1) {
