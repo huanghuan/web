@@ -1,0 +1,110 @@
+<html>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1,user-scalable=0'>
+<style>
+body {
+	margin: 0;
+	overflow: hidden;
+}
+main {
+	background: #334;
+	display: flex;
+	overflow: hidden;
+	position: fixed;
+	left: 64px;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+article {
+	display: inline-block;
+	flex: 0 0 auto;
+	margin: auto;
+}
+header {
+	background: linear-gradient(to left, #36c, #0cf);
+	position: fixed;
+	left: 0;
+	top: 0;
+	bottom: 0;
+}
+header svg {
+	display: block;
+	margin: 8px;
+	width: 48px;
+	height: 48px;
+}
+</style>
+</head>
+<body>
+<header><a title='放大' onclick='scale(1.25)'><svg viewBox='0 0 960 960'>
+	<path d='m543,375h-92v-92c0-21-17-38-38-38-21,0-38,17-38,38v92h-92c-21,0-38,17-38,38 0,21 17,38 38,38h92v92c0,21 17,38 38,38 21,0 38-17 38-38v-92h92c21,0 38-17 38-38 0-21-17-38-38-38z' style='fill:white'/>
+	<path d='m413,729c-174,0-315-141-315-315s141-315 315-315 315,141 315,315-141,315-315,315zm515,146l-212-212c56-68 89-155 89-249 0-217-176-392-392-392s-392,176-392,392 176,392 392,392c95,0 181-33 249-89l212,212c10,10 40,15 54,0 15-15 15-39-0-54z' style='fill:white'/>
+</svg></a><a title='缩小' onclick='scale(0.8)'><svg viewBox='0 0 960 960'>
+	<path d='m543,374h-261c-21,0-38,17-38,38 0,21 17,38 38,38h261c21,0 38-17 38-38 0-21-17-38-38-38z' style='fill:white'/>
+	<path d='m413,728c-174,0-315-141-315-315 0-174 141-315 315-315 174,0 315,141 315,315 11e-26,174-141,315-315,315zm515,146l-212-212c56-68 89-155 89-249 0-217-176-392-392-392s-392,176-392,392 176,392 392,392c95,0 181-33 249-89l212,212c15,15 39,15 54,0 15-15 15-39 0-54z' style='fill:white'/>
+</svg></a><a title='评论'><svg viewBox='0 0 960 960' onclick=''>
+	<path d='m138,97c-23,0-41,15-41,34v463c0,19 18,34 41,34h345c10,0 20,4 28,12l161,166v-139c0-21 17-38 38-38h112c23,0 41-15 41-34v-463c0-19-18-34-41-34h-684-5e-26zm544,829l-216-222h-329c-65,0-117-50-117-110v-463c13e-28-61 53-110 117-110h684c65,0 117,50 117,110v463c0,61-53,110-117,110h-74v196c0,37-42,53-66,27z' style='fill:white'/>
+	<path d='m705,289h-450c-21,0-38-17-38-38s17-38 38-38h450c21,0 38,17 38,38s-17,38-38,38z' style='fill:white'/>
+	<path d='m705,508h-450c-21,0-38-17-38-38 0-21 17-38 38-38h450c21,0 38,17 38,38 0,21-17,38-38,38z' style='fill:white'/>
+</svg></a><a title='标注'><svg viewBox='0 0 960 960' onclick=''>
+	<path d='m853,259l-61,61-152-152 61-61c12-12 34-12 46,0l106,106c13,13 13,34 0,46zm-508,508l-152-152 393-393 152,152-393,393zm-187-79l114,114-158,45 45-158zm749-530l-106-106c-21-21-95-60-155,0l-535,535c-5,5-8,10-10,17l-81,287c-4,13 0,28 10,38 10,10 29,12 38,10l287-81c6-2 12-5 17-10l535-535c43-43 43-112 0-155z' style='fill:white'/>
+</svg></a></header>
+<main><article><video src='abdomen.mp4'></video></article></main>
+<script>
+var ar = document.querySelector('article'), ma = ar.parentNode;
+function distance(x0, y0, x1, y1) {
+	var x = x1 - x0, y = y1 - y0;
+	return Math.sqrt(x * x + y * y);
+}
+function fit(element, container) {
+	return Math.min(container.clientWidth / element.offsetWidth, container.clientHeight / element.offsetHeight);
+}
+function scale(s) {
+	ar.style.zoom = (parseFloat(ar.style.zoom) || 100) * s + '%';
+}
+document.body.addEventListener('mousewheel', function(ev) {
+	ev.preventDefault();
+	scale(ev.wheelDelta > 0 ? 1.25 : 0.8);
+});
+function pan(el) {
+	var x, y;
+	el.addEventListener('mousedown', function(ev) {
+		if (ev.buttons == 1) {
+			ev.preventDefault();
+			x = ev.pageX + el.scrollLeft;
+			y = ev.pageY + el.scrollTop;
+		}
+	});
+	el.addEventListener('mousemove', function(ev) {
+		if (ev.buttons == 1) {
+			ev.preventDefault();
+			el.scrollLeft = x - ev.pageX;
+			el.scrollTop = y - ev.pageY;
+		}
+	});
+}
+function pinch(el) {
+	var d, z;
+	el.addEventListener('touchstart', function(ev) {
+		var a = ev.targetTouches;
+		if (a.length == 2) {
+			ev.preventDefault();
+			d = distance(a[0].pageX, a[0].pageY, a[1].pageX, a[1].pageY);
+			z = parseFloat(ar.style.zoom) || 100;
+		}
+	});
+	el.addEventListener('touchmove', function(ev) {
+		var a = ev.targetTouches;
+		if (a.length == 2) {
+			ev.preventDefault();
+			el.style.zoom = z * distance(a[0].pageX, a[0].pageY, a[1].pageX, a[1].pageY) / d + '%';
+		}
+	});
+}
+pan(ma);
+pinch(ar);
+</script>
+</body>
+</html>
