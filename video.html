@@ -25,6 +25,7 @@ body {
 	display: inline-block;
 	flex: 0 0 auto;
 	margin: auto;
+	position: relative;
 }
 header {
 	background: linear-gradient(to left, #36c, #0cf);
@@ -53,6 +54,15 @@ input[type=range] {
 	right: 1em;
 	top: 1em;
 }
+#wrap svg {
+	fill: none;
+	opacity: 0.6;
+	stroke: #ff0;
+	stroke-width: 4px;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
 </style>
 </head>
 <body>
@@ -71,10 +81,11 @@ input[type=range] {
 </svg></a></header>
 <div id='contain'>
 <div id='scroll'>
-<div id='wrap'><video id='v' src='abdomen.mp4' onloadedmetadata='id.seek.max=this.duration/0.04'></video></div>
+<div id='wrap'><video id='v'></video><svg id='an' viewBox='0 0 512 512'>
+<polyline id='pl'/></svg></div>
 </div>
 <span id='frameNum'>Frame 0/0</span>
-<input type='range' id='seek' oninput='id.v.currentTime=id.v.duration*this.value/this.max'>
+<input type='range' id='seek' oninput='update(this.value)'>
 </div>
 <script>
 function elementById() {
@@ -83,21 +94,27 @@ function elementById() {
 		o[l[i].id] = l[i];
 	return o;
 }
-var id = elementById();
+var _ = elementById();
+function fit() {
+	var w = _.wrap, s = _.scroll;
+	return Math.min(s.clientWidth / w.offsetWidth, s.clientHeight / w.offsetHeight);
+}
 function update(fn) {
-	id.frameNum.textContent = 'Frame ' + fn + '/' + max;
+	var max = _.seek.max, v = _.v;
+	_.frameNum.textContent = 'Frame ' + fn + '/' + max;
+	v.currentTime = v.duration * fn / max;
 }
 function distance(x0, y0, x1, y1) {
 	var x = x1 - x0, y = y1 - y0;
 	return Math.sqrt(x * x + y * y);
 }
-/*
-function fit(element, contain) {
-	return Math.min(contain.clientWidth / element.offsetWidth, contain.clientHeight / element.offsetHeight);
-}
-*/
 function scale(s) {
-	id.wrap.style.zoom = (parseFloat(wrap.style.zoom) || 100) * s + '%';
+	s *= (parseFloat(wrap.style.zoom) || 100);
+	if (s < 25)
+		s = 25;
+	else if (s > 400)
+		s = 400;
+	_.wrap.style.zoom = s + '%';
 }
 document.body.addEventListener('mousewheel', function(ev) {
 	ev.preventDefault();
@@ -138,8 +155,26 @@ function pinch(el) {
 		}
 	});
 }
-pan(id.scroll);
-pinch(id.wrap);
+pan(_.scroll);
+pinch(_.wrap);
+
+_.v.addEventListener('loadedmetadata', function(ev) {
+	_.seek.max = this.duration / 0.04;
+	update(0);
+	_.an.width = this.width;
+	_.an.height = this.height;
+	scale(fit());
+});
+_.v.src = 'abdomen.mp4';
+
+_.an.addEventListener('mousedown', function(ev) {
+	_.pl.setAttribute('points', ev.offsetX + ',' + ev.offsetY);
+	alert(parseFloat(_.wrap.style.zoom) / 100);
+});
+_.an.addEventListener('mousemove', function(ev) {
+	if (ev.buttons)
+		_.pl.setAttribute('points',  _.pl.getAttribute('points') + ' ' + ev.offsetX + ',' + ev.offsetY);
+});
 </script>
 </body>
 </html>
