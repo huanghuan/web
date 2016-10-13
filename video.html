@@ -3,6 +3,10 @@
 <meta charset='UTF-8'>
 <meta name='viewport' content='width=device-width,initial-scale=1,user-scalable=0'>
 <style>
+* {
+	font-family: sans-serif;
+	font-size: 16px;
+}
 body {
 	margin: 0;
 	overflow: hidden;
@@ -10,7 +14,7 @@ body {
 #contain {
 	background: #000;
 	position: fixed;
-	left: 64px;
+	left: 48px;
 	right: 0;
 	top: 0;
 	bottom: 0;
@@ -27,18 +31,45 @@ body {
 	margin: auto;
 	position: relative;
 }
+#an {
+	fill: none;
+	opacity: 0.6;
+	stroke: #f0f;
+	stroke-width: 2px;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+#info {
+	color: #ff0;
+	opacity: 0.8;
+	position: absolute;
+	right: 1em;
+	top: 1em;
+	text-align: right;
+}
 header {
-	background: linear-gradient(to left, #36c, #0cf);
+	background: #334;
 	position: fixed;
 	left: 0;
 	top: 0;
-	bottom: 0;
+	width: 48px;
+	height: 100%;
+}
+header>a {
+	display: inline-block;
+	padding: 8px;
 }
 header svg {
-	display: block;
-	margin: 8px;
-	width: 48px;
-	height: 48px;
+	transition: stroke 1s;
+	width: 32px;
+	height: 32px;
+	fill: none;
+	stroke: white;
+	stroke-width: 4px;
+}
+header svg:hover {
+	stroke: yellow;
 }
 input[type=range] {
 	opacity: 0.8;
@@ -47,46 +78,123 @@ input[type=range] {
 	bottom: 5%;
 	width: 80%;
 }
-#frameNum {
-	color: #ff0;
-	opacity: 0.8;
-	position: absolute;
-	right: 1em;
-	top: 1em;
-}
-#wrap svg {
-	fill: none;
-	opacity: 0.6;
-	stroke: #ff0;
-	stroke-width: 4px;
-	position: absolute;
-	left: 0;
+aside {
+	background: #fff;
+	box-sizing: border-box;
+	padding: 1em;
+	opacity: 0;
+	overflow: auto;
+	position: fixed;
+	left: -50%;
 	top: 0;
+	width: 50%;
+	height: 100%;
+	transition: all 0.5s;
+}
+aside.shown {
+	left: 0;
+	opacity: 1;
+}
+aside svg {
+	fill: none;
+	stroke: black;
+	stroke-width: 8px;
+	width: 32px;
+	height: 32px;
+}
+aside>span {
+	box-sizing: border-box;
+	display: inline-block;
+	padding: 1em;
+	width: 50%;
+}
+aside>div {
+	padding: 1em;
+}
+aside label {
+	color: #333;
+	display: inline-block;
+	padding: 5px;
+}
+aside input {
+	background: none;
+	border: 1px solid #ccc;
+	color: #333;
+	display: block;
+	padding: 4px;
+	width: 100%;
+}
+aside textarea {
+	background: none;
+	border: 1px solid #ccc;
+	color: #333;
+	padding: 0.25em;
+	width: 100%;
+}
+@media screen and (orientation:portrait) {
+	header {
+		width: 100%;
+		height: 48px;
+	}
+	#contain {
+		left: 0;
+		top: 48px;
+	}
+	aside {
+		left: -100%;
+		width: 100%;
+	}
 }
 </style>
 </head>
 <body>
-<header><a title='放大' onclick='scale(1.25)'><svg viewBox='0 0 960 960'>
-	<path d='m543,375h-92v-92c0-21-17-38-38-38-21,0-38,17-38,38v92h-92c-21,0-38,17-38,38 0,21 17,38 38,38h92v92c0,21 17,38 38,38 21,0 38-17 38-38v-92h92c21,0 38-17 38-38 0-21-17-38-38-38z' style='fill:white'/>
-	<path d='m413,729c-174,0-315-141-315-315s141-315 315-315 315,141 315,315-141,315-315,315zm515,146l-212-212c56-68 89-155 89-249 0-217-176-392-392-392s-392,176-392,392 176,392 392,392c95,0 181-33 249-89l212,212c10,10 40,15 54,0 15-15 15-39-0-54z' style='fill:white'/>
-</svg></a><a title='缩小' onclick='scale(0.8)'><svg viewBox='0 0 960 960'>
-	<path d='m543,374h-261c-21,0-38,17-38,38 0,21 17,38 38,38h261c21,0 38-17 38-38 0-21-17-38-38-38z' style='fill:white'/>
-	<path d='m413,728c-174,0-315-141-315-315 0-174 141-315 315-315 174,0 315,141 315,315 11e-26,174-141,315-315,315zm515,146l-212-212c56-68 89-155 89-249 0-217-176-392-392-392s-392,176-392,392 176,392 392,392c95,0 181-33 249-89l212,212c15,15 39,15 54,0 15-15 15-39 0-54z' style='fill:white'/>
-</svg></a><a title='评论'><svg viewBox='0 0 960 960' onclick=''>
-	<path d='m138,97c-23,0-41,15-41,34v463c0,19 18,34 41,34h345c10,0 20,4 28,12l161,166v-139c0-21 17-38 38-38h112c23,0 41-15 41-34v-463c0-19-18-34-41-34h-684-5e-26zm544,829l-216-222h-329c-65,0-117-50-117-110v-463c13e-28-61 53-110 117-110h684c65,0 117,50 117,110v463c0,61-53,110-117,110h-74v196c0,37-42,53-66,27z' style='fill:white'/>
-	<path d='m705,289h-450c-21,0-38-17-38-38s17-38 38-38h450c21,0 38,17 38,38s-17,38-38,38z' style='fill:white'/>
-	<path d='m705,508h-450c-21,0-38-17-38-38 0-21 17-38 38-38h450c21,0 38,17 38,38 0,21-17,38-38,38z' style='fill:white'/>
-</svg></a><a title='标注'><svg viewBox='0 0 960 960' onclick=''>
-	<path d='m853,259l-61,61-152-152 61-61c12-12 34-12 46,0l106,106c13,13 13,34 0,46zm-508,508l-152-152 393-393 152,152-393,393zm-187-79l114,114-158,45 45-158zm749-530l-106-106c-21-21-95-60-155,0l-535,535c-5,5-8,10-10,17l-81,287c-4,13 0,28 10,38 10,10 29,12 38,10l287-81c6-2 12-5 17-10l535-535c43-43 43-112 0-155z' style='fill:white'/>
+<header><a title='放大' onclick='zoom(zoom()*1.25)'><svg viewBox='0 0 64 64'>
+	<circle cx='27' cy='27' r='25'/>
+	<path d='M44.675 44.675l17.325 17.325M12 27h30M27 12v30'/>
+</svg></a><a title='缩小' onclick='zoom(zoom()*0.8)'><svg viewBox='0 0 64 64'>
+	<circle cx='27' cy='27' r='25'/>
+	<path d='M44.675 44.675l17.325 17.325M12 27h30'/>
+</svg></a><a title='自动缩放' onclick='zoom(fit())'><svg viewBox='0 0 64 64'>
+	<circle cx='27' cy='27' r='25'/>
+	<path d='M44.675 44.675l17.325 17.325M17 37l10 -20l10 20M21 29h12'/>
+</svg></a><a title='播放' onclick='_.v.play()'><svg viewBox='0 0 64 64'>
+	<path d='m7 2v60l50 -30z'/>
+</svg></a><a title='停止' onclick='_.v.pause()'><svg viewBox='0 0 64 64'>
+	<rect x='7' y='7' width='50' height='50'/>
+</svg></a><!--a title='后退' onclick='play(-1)'><svg viewBox='0 0 64 64'>
+	<path d='m7 32l50 -30v60z'/>
+</svg></a--><a title='标注' onclick='annotate()'><svg viewBox='0 0 64 64'>
+	<path d='M2 62L22 57 62 17 47 2 7 42ZM7 42L22 57'/>
+</svg></a><a title='清除标注' onclick='if(confirm("清除所有标注？"))_.an.innerHTML=""'><svg viewBox='0 0 64 64'>
+	<path d='M2 62L22 57 62 17 47 2 7 42ZM7 42L22 57M2 2L62 62'/>
+</svg></a><a title='病历及诊断' onclick='_.record.className="shown"'><svg viewBox='0 0 64 64'>
+	<path d='m7 17l15 -15h35v60h-50zM7 17h15v-15'/>
+</svg></a><a title='分享' onclick='share()'><svg viewBox='0 0 64 64'>
+	<circle cx='12' cy='32' r='10'/>
+	<circle cx='52' cy='12' r='10'/>
+	<circle cx='52' cy='52' r='10'/>
+	<path d='M20.944 27.528L43.056 16.472M20.944 36.472L43.056 47.528'/>
 </svg></a></header>
 <div id='contain'>
 <div id='scroll'>
-<div id='wrap'><video id='v'></video><svg id='an' viewBox='0 0 512 512'>
-<polyline id='pl'/></svg></div>
+<div id='wrap'><video id='v' preload='metadata'></video><svg id='an' viewBox='0 0 512 512'></svg></div>
 </div>
-<span id='frameNum'>Frame 0/0</span>
-<input type='range' id='seek' oninput='update(this.value)'>
+<div id='info'>Frame <span id='frameIndex'>0</span>/<span id='frameCount'>0</span><br>Zoom <span id='zoom'></span>%</div>
+<input type='range' id='seek'>
 </div>
+<aside id='record'>
+<span><label>姓名</label><input value='匿名'></span><span><label>性别</label><input value='M'></span><span><label>年龄</label><input value='000Y'></span><span><label>日期</label><input value='20060425'></span></span>
+<div><label>既往病史</label><textarea rows='5'></textarea></div>
+<div><label>症状描述</label><textarea rows='5'></textarea></div>
+<div><label>诊断意见</label><textarea rows='5'></textarea></div>
+<a title='隐藏' onclick='_.record.className=""'><svg viewBox='0 0 64 64'>
+	<polyline points='32,7 7,32 32,57'/>
+	<line x1='7' y1='32' x2='57' y2='32'/>
+</svg></a>
+<a title='提交' style='float:right' onclick='if(confirm("是否提交诊断意见？"))_.record.className=""'><svg viewBox='0 0 64 64'>
+	<polyline points='2,32 22,52 62,12'/>
+</svg></a>
+</aside>
 <script>
 function elementById() {
 	var o = {};
@@ -97,28 +205,23 @@ function elementById() {
 var _ = elementById();
 function fit() {
 	var w = _.wrap, s = _.scroll;
-	return Math.min(s.clientWidth / w.offsetWidth, s.clientHeight / w.offsetHeight);
+	return Math.min(s.clientWidth / w.offsetWidth, s.clientHeight / w.offsetHeight) * 100;
 }
-function update(fn) {
-	var max = _.seek.max, v = _.v;
-	_.frameNum.textContent = 'Frame ' + fn + '/' + max;
-	v.currentTime = v.duration * fn / max;
-}
-function distance(x0, y0, x1, y1) {
-	var x = x1 - x0, y = y1 - y0;
-	return Math.sqrt(x * x + y * y);
-}
-function scale(s) {
-	s *= (parseFloat(wrap.style.zoom) || 100);
-	if (s < 25)
-		s = 25;
-	else if (s > 400)
-		s = 400;
-	_.wrap.style.zoom = s + '%';
+function zoom(s) {
+	if (s) {
+		if (s < 25)
+			s = 25;
+		else if (s > 400)
+			s = 400;
+		_.wrap.style.zoom = s + '%';
+		_.zoom.textContent = s | 0;
+	} else {
+		return parseFloat(_.wrap.style.zoom) || 100;
+	}
 }
 document.body.addEventListener('mousewheel', function(ev) {
 	ev.preventDefault();
-	scale(ev.wheelDelta > 0 ? 1.25 : 0.8);
+	zoom(zoom() * (ev.wheelDelta > 0 ? 1.25 : 0.8));
 });
 function pan(el) {
 	var x, y;
@@ -136,8 +239,28 @@ function pan(el) {
 			el.scrollTop = y - ev.pageY;
 		}
 	});
+	el.addEventListener('touchstart', function(ev) {
+		var a = ev.targetTouches;
+		if (a.length == 1) {
+			ev.preventDefault();
+			x = a[0].pageX + el.scrollLeft;
+			y = a[0].pageY + el.scrollTop;
+		}
+	});
+	el.addEventListener('touchmove', function(ev) {
+		var a = ev.targetTouches;
+		if (a.length == 1) {
+			ev.preventDefault();
+			el.scrollLeft = x - a[0].pageX;
+			el.scrollTop = y - a[0].pageY;
+		}
+	});
 }
 function pinch(el) {
+	function distance(x0, y0, x1, y1) {
+		var x = x1 - x0, y = y1 - y0;
+		return Math.sqrt(x * x + y * y);
+	}
 	var d, z;
 	el.addEventListener('touchstart', function(ev) {
 		var a = ev.targetTouches;
@@ -151,7 +274,7 @@ function pinch(el) {
 		var a = ev.targetTouches;
 		if (a.length == 2) {
 			ev.preventDefault();
-			el.style.zoom = z * distance(a[0].pageX, a[0].pageY, a[1].pageX, a[1].pageY) / d + '%';
+			zoom(z * distance(a[0].pageX, a[0].pageY, a[1].pageX, a[1].pageY) / d);
 		}
 	});
 }
@@ -159,22 +282,52 @@ pan(_.scroll);
 pinch(_.wrap);
 
 _.v.addEventListener('loadedmetadata', function(ev) {
-	_.seek.max = this.duration / 0.04;
-	update(0);
 	_.an.width = this.width;
 	_.an.height = this.height;
-	scale(fit());
+	zoom(fit());
+	_.frameCount.textContent = _.seek.max = this.duration / 0.04;
+	_.v.currentTime = 0;
 });
-_.v.src = 'abdomen.mp4';
+_.v.addEventListener('canplay', function(ev) {
+});
+_.v.addEventListener('timeupdate', function(ev) {
+	_.frameIndex.textContent = _.seek.value = (this.currentTime / 0.04) | 0;
+});
+_.v.src = 'base2.mp4';
+_.seek.addEventListener('input', function() {
+	_.v.pause();
+	_.v.currentTime = (parseInt(this.value) * 0.04) | 0;
+});
 
-_.an.addEventListener('mousedown', function(ev) {
-	_.pl.setAttribute('points', ev.offsetX + ',' + ev.offsetY);
-	alert(parseFloat(_.wrap.style.zoom) / 100);
-});
-_.an.addEventListener('mousemove', function(ev) {
-	if (ev.buttons)
-		_.pl.setAttribute('points',  _.pl.getAttribute('points') + ' ' + ev.offsetX + ',' + ev.offsetY);
-});
+function annotate() {
+	var p, s;
+	_.an.addEventListener('mousedown', function(ev) {
+		p = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+		s = (parseFloat(_.wrap.style.zoom) || 100) / 100;
+		_.an.appendChild(p);
+		p.setAttribute('points', ev.offsetX / s + ',' + ev.offsetY / s);
+	});
+	_.an.addEventListener('mousemove', function(ev) {
+		if (ev.buttons)
+			p.setAttribute('points',  p.getAttribute('points') + ' ' + ev.offsetX / s + ',' + ev.offsetY / s);
+	});
+}
+
+var intervalId;
+function play(dir) {
+	if (intervalId)
+		window.clearInterval(intervalId);
+	if (dir) {
+		var s = _.seek, m = s.max;
+		intervalId = window.setInterval(function() {
+			var i = parseInt(s.value) + dir;
+			if (i < 0 || i > m)
+				window.clearInterval(intervalId);
+			else
+				seek(i);
+		}, 100);
+	}
+}
 </script>
 </body>
 </html>
