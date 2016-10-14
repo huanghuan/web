@@ -133,6 +133,8 @@ aside textarea {
 }
 @media screen and (max-width: 800px) {
 	header {
+		overflow: auto;
+		white-space: nowrap;
 		width: 100%;
 		height: 48px;
 	}
@@ -144,14 +146,23 @@ aside textarea {
 		left: -100%;
 		width: 100%;
 	}
-	.desktop {
-		display: none;
-	}
 }
 </style>
 </head>
 <body>
-<header><a title='放大' onclick='mode("Z");zoom(zoom()*1.25)'><svg viewBox='0 0 64 64'>
+<header><a title='播放' onclick='mode("P");_.v.play()'><svg viewBox='0 0 64 64'>
+	<path d='m7 2v60l50 -30z'/>
+</svg></a><a title='停止' onclick='mode("P");_.v.pause()'><svg viewBox='0 0 64 64'>
+	<rect x='7' y='7' width='50' height='50'/>
+</svg></a><!--a title='后退' onclick='play(-1)'><svg viewBox='0 0 64 64'>
+	<path d='m7 32l50 -30v60z'/>
+</svg></a--><a title='标注' onclick='mode("A")'><svg viewBox='0 0 64 64'>
+	<path d='M2 62L22 57 62 17 47 2 7 42ZM7 42L22 57'/>
+</svg></a><a title='清除标注' onclick='mode("A");if(confirm("清除所有标注？"))_.an.innerHTML=""'><svg viewBox='0 0 64 64'>
+	<path d='M2 62L22 57 62 17 47 2 7 42ZM7 42L22 57M2 2L62 62'/>
+</svg></a><a title='病历及诊断' onclick='_.record.className="shown"'><svg viewBox='0 0 64 64'>
+	<path d='m7 17l15 -15h35v60h-50zM7 17h15v-15'/>
+</svg></a><a title='放大' onclick='mode("Z");zoom(zoom()*1.25)'><svg viewBox='0 0 64 64'>
 	<circle cx='27' cy='27' r='25'/>
 	<path d='M44.675 44.675l17.325 17.325M12 27h30M27 12v30'/>
 </svg></a><a title='缩小' onclick='mode("Z");zoom(zoom()*0.8)'><svg viewBox='0 0 64 64'>
@@ -160,18 +171,9 @@ aside textarea {
 </svg></a><a title='自动缩放' onclick='mode("Z");zoom(fit())'><svg viewBox='0 0 64 64'>
 	<circle cx='27' cy='27' r='25'/>
 	<path d='M44.675 44.675l17.325 17.325M17 37l10 -20l10 20M21 29h12'/>
-</svg></a><a title='播放' onclick='mode("P");_.v.play()'><svg viewBox='0 0 64 64'>
-	<path d='m7 2v60l50 -30z'/>
-</svg></a><a title='停止' onclick='mode("P");_.v.pause()'><svg viewBox='0 0 64 64'>
-	<rect x='7' y='7' width='50' height='50'/>
-</svg></a><!--a title='后退' onclick='play(-1)'><svg viewBox='0 0 64 64'>
-	<path d='m7 32l50 -30v60z'/>
-</svg></a--><a title='标注' class='desktop' onclick='mode("A")'><svg viewBox='0 0 64 64'>
-	<path d='M2 62L22 57 62 17 47 2 7 42ZM7 42L22 57'/>
-</svg></a><a title='清除标注' class='desktop' onclick='mode("A");if(confirm("清除所有标注？"))_.an.innerHTML=""'><svg viewBox='0 0 64 64'>
-	<path d='M2 62L22 57 62 17 47 2 7 42ZM7 42L22 57M2 2L62 62'/>
-</svg></a><a title='病历及诊断' onclick='_.record.className="shown"'><svg viewBox='0 0 64 64'>
-	<path d='m7 17l15 -15h35v60h-50zM7 17h15v-15'/>
+</svg></a><a title='无缩放' onclick='mode("Z");zoom(1)'><svg viewBox='0 0 64 64'>
+	<circle cx='27' cy='27' r='25'/>
+	<path d='M44.675 44.675l17.325 17.325M22 22l5 -5v20m-5 0h10'/>
 </svg></a><a title='分享' onclick='alert("通过链接、邮件、微博、QQ、微信或朋友圈分享")'><svg viewBox='0 0 64 64'>
 	<circle cx='12' cy='32' r='10'/>
 	<circle cx='52' cy='12' r='10'/>
@@ -208,18 +210,18 @@ function elementById() {
 var _ = elementById();
 function fit() {
 	var w = _.wrap, s = _.scroll;
-	return Math.min(s.clientWidth / w.offsetWidth, s.clientHeight / w.offsetHeight) * 100;
+	return Math.min(s.clientWidth / w.offsetWidth, s.clientHeight / w.offsetHeight);
 }
 function zoom(s) {
 	if (s) {
-		if (s < 25)
-			s = 25;
-		else if (s > 400)
-			s = 400;
-		_.wrap.style.zoom = s + '%';
-		_.zoom.textContent = s.toFixed();
+		if (s < 0.25)
+			s = 0.25;
+		else if (s > 4)
+			s = 4;
+		_.wrap.style.zoom = s;
+		_.zoom.textContent = (s * 100).toFixed();
 	} else {
-		return parseFloat(_.wrap.style.zoom) || 100;
+		return parseFloat(_.wrap.style.zoom) || 1;
 	}
 }
 function mode(m) {
@@ -280,47 +282,52 @@ function pan(el) {
 	});
 }
 function annotate(el) {
-	var p, s;
+	var o, p, s;
+	function offset(e, o) {
+		if (!o)
+			o = {left: 0, top: 0};
+		var s = parseFloat(e.style.zoom) || 1;
+		o.left += e.offsetLeft * s;
+		o.top += e.offsetTop * s;
+		var p = e.offsetParent;
+		if (!p)
+			return o;
+		o.left -= p.scrollLeft;
+		o.top -= p.scrollTop;
+		return offset(p, o);
+	}
 	function start(x, y) {
+		o = offset(_.wrap);
 		p = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
 		el.appendChild(p);
-		s = zoom() / 100;
-		p.setAttribute('points', x / s + ',' + y / s);
+		s = zoom();
+		p.setAttribute('points', (x - o.left) / s + ',' + (y - o.top) / s);
 	}
 	function move(x, y) {
-		p.setAttribute('points',  p.getAttribute('points') + ' ' + x / s + ',' + y / s);
+		p.setAttribute('points',  p.getAttribute('points') + ' ' + (x - o.left) / s + ',' + (y - o.top) / s);
 	}
 	el.addEventListener('mousedown', function(ev) {
 		if (_.mode == 'A' && ev.buttons == 1)
-			start(ev.offsetX, ev.offsetY);
+			start(ev.pageX, ev.pageY);
 	});
 	el.addEventListener('mousemove', function(ev) {
 		if (_.mode == 'A' && ev.buttons == 1)
-			move(ev.offsetX, ev.offsetY);
+			move(ev.pageX, ev.pageY);
 	});
-	/*
-	var l, t;
-	function recurse(elem, prop, val) {
-		val = elem[prop] + val || 0;
-		var op = elem.offsetParent;
-		return op ? recurse(op, prop, val) : val;
-	}
 	el.addEventListener('touchstart', function(ev) {
 		var a = ev.targetTouches;
 		if (_.mode == 'A' && a.length == 1) {
 			ev.preventDefault();
-			l = recurse(_.wrap, 'offsetLeft'), t = recurse(_.wrap, 'offsetTop');
-			start(a[0].pageX - l, a[0].pageY - t);
+			start(a[0].pageX, a[0].pageY);
 		}
 	});
 	el.addEventListener('touchmove', function(ev) {
 		var a = ev.targetTouches;
 		if (_.mode == 'A' && a.length == 1) {
 			ev.preventDefault();
-			move(a[0].pageX - l, a[0].pageY - t);
+			move(a[0].pageX, a[0].pageY);
 		}
 	});
-	*/
 }
 pan(_.scroll);
 annotate(_.an);
