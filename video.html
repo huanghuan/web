@@ -31,14 +31,12 @@ body {
 	margin: auto;
 	position: relative;
 }
-#an {
-	fill: none;
-	opacity: 0.6;
-	stroke: #f0f;
-	stroke-width: 2px;
+#can {
 	position: absolute;
 	left: 0;
 	top: 0;
+	width: 100%;
+	height: 100%;
 }
 #info {
 	color: #ff0;
@@ -158,7 +156,7 @@ aside textarea {
 	<path d='m7 32l50 -30v60z'/>
 </svg></a--><a title='标注' onclick='mode("A")'><svg viewBox='0 0 64 64'>
 	<path d='M2 62L22 57 62 17 47 2 7 42ZM7 42L22 57'/>
-</svg></a><a title='清除标注' onclick='mode("A");if(confirm("清除所有标注？"))_.an.innerHTML=""'><svg viewBox='0 0 64 64'>
+</svg></a><a title='清除标注' onclick='mode("A");if(confirm("清除所有标注？"))c2d.clearRect(0,0,can.width,can.height)'><svg viewBox='0 0 64 64'>
 	<path d='M2 62L22 57 62 17 47 2 7 42ZM7 42L22 57M2 2L62 62'/>
 </svg></a><a title='病历及诊断' onclick='_.record.className="shown"'><svg viewBox='0 0 64 64'>
 	<path d='m7 17l15 -15h35v60h-50zM7 17h15v-15'/>
@@ -182,7 +180,7 @@ aside textarea {
 </svg></a></header>
 <div id='contain'>
 <div id='scroll'>
-<div id='wrap'><video id='v' preload='metadata'></video><svg id='an' viewBox='0 0 512 512'></svg></div>
+<div id='wrap'><video id='v' preload='metadata'></video><canvas id='can'></canvas></div>
 </div>
 <div id='info'>Frame <span id='frameIndex'>0</span>/<span id='frameCount'>0</span><br>Zoom <span id='zoom'></span>%</div>
 <input type='range' id='seek'>
@@ -281,8 +279,9 @@ function pan(el) {
 		}
 	});
 }
+var c2d;
 function annotate(el) {
-	var o, p, s;
+	var l, o, s;
 	function offset(e, o) {
 		if (!o)
 			o = {left: 0, top: 0};
@@ -298,13 +297,15 @@ function annotate(el) {
 	}
 	function start(x, y) {
 		o = offset(_.wrap);
-		p = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-		el.appendChild(p);
 		s = zoom();
-		p.setAttribute('points', (x - o.left) / s + ',' + (y - o.top) / s);
+		l = {left: (x - o.left) / s, top: (y - o.top) / s};
 	}
 	function move(x, y) {
-		p.setAttribute('points',  p.getAttribute('points') + ' ' + (x - o.left) / s + ',' + (y - o.top) / s);
+		c2d.beginPath();
+		c2d.moveTo(l.left, l.top);
+		l = {left: (x - o.left) / s, top: (y - o.top) / s};
+		c2d.lineTo(l.left, l.top);
+		c2d.stroke();
 	}
 	el.addEventListener('mousedown', function(ev) {
 		if (_.mode == 'A' && ev.buttons == 1)
@@ -330,15 +331,18 @@ function annotate(el) {
 	});
 }
 pan(_.scroll);
-annotate(_.an);
+annotate(can);
 
 _.seek.addEventListener('input', function() {
 	_.v.pause();
 	_.v.currentTime = parseInt(this.value) * 0.04;
 });
 _.v.addEventListener('loadedmetadata', function(ev) {
-	_.an.width = this.width;
-	_.an.height = this.height;
+	can.width = this.videoWidth;
+	can.height = this.videoHeight;
+	c2d = can.getContext('2d');
+	c2d.lineWidth = 2;
+	c2d.strokeStyle = '#f0f';
 	zoom(fit());
 	_.frameCount.textContent = _.seek.max = (this.duration / 0.04).toFixed();
 	_.v.currentTime = 0;
