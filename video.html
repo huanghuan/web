@@ -350,7 +350,7 @@ _.v.addEventListener('loadedmetadata', function(ev) {
 _.v.addEventListener('timeupdate', function(ev) {
 	_.frameIndex.textContent = _.seek.value = (this.currentTime / 0.04).toFixed();
 });
-_.v.src = location.hash ? location.hash.substring(1) : 'base3.mp4';
+_.v.src = location.hash ? location.hash.substring(1) : 'main.mp4';
 
 var intervalId;
 function play(dir) {
